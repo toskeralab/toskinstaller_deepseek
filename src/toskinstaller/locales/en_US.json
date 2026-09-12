@@ -1,0 +1,22 @@
+{
+  "app.name": "TOSKINSTALLER",
+  "app.vendor": "ToskeraLAB ART/TECH House",
+  "app.cli_help": "Usage: python -m toskinstaller --detect <project-folder> [--locale pt_BR|en_US]",
+
+  "detector.no_files": "No files found at: {path}",
+  "detector.path_not_found": "Path not found: {path}",
+  "detector.path_not_dir": "Path is not a folder: {path}",
+  "detector.language.python": "Python",
+  "detector.language.node": "Node.js",
+  "detector.language.unknown": "Unknown",
+  "detector.confidence": "Confidence: {value}",
+  "detector.entry_point": "Entry point: {path}",
+  "detector.toolchain": "Suggested toolchain: {name}",
+  "detector.signals": "Signals detected: {count}",
+
+  "toolchain.pyinstaller": "PyInstaller",
+  "toolchain.nuitka": "Nuitka",
+  "toolchain.cx_freeze": "cx_Freeze",
+  "toolchain.pkg": "pkg",
+  "toolchain.electron_builder": "electron-builder"
+}
