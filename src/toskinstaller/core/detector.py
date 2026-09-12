@@ -7,9 +7,8 @@ Estratégia:
   3. Escolha do ponto de entrada por heurística.
   4. Escolha da toolchain a partir de metadados (ex.: electron em package.json).
 
-A confiança (0.0–1.0) cresce com o peso total do vencedor e com a diferença
-para o segundo colocado. Quando empate, a decisão fica ambígua e a linguagem
-retornada é "unknown" com confidence baixa.
+A confiança (0.0–1.0) cresce com a dominância do vencedor sobre o total de sinais
+e com a força absoluta dos marcadores encontrados.
 """
 
 from __future__ import annotations
@@ -237,14 +236,23 @@ class Detector:
         if top_score <= 0:
             return "unknown", 0.0
 
+        total = sum(scores.values())
+
         # ambiguidade: se o 2º está a menos de 15% do 1º, não decidimos
         if second_score > 0 and (top_score - second_score) / top_score < 0.15:
-            return "unknown", round(min(1.0, top_score / 12.0) * 0.4, 2)
+            dominance = top_score / total if total > 0 else 0.0
+            return "unknown", round(0.5 * dominance, 2)
 
-        base = min(1.0, top_score / 12.0)
-        margin = (top_score - second_score) / top_score
-        confidence = round(base * (0.6 + 0.4 * margin), 2)
-        return top_lang, min(1.0, confidence)
+        # Dominância: quanto do total de sinais o vencedor concentra.
+        dominance = top_score / total if total > 0 else 0.0
+
+        # Força absoluta: 6 pontos = 1 marker forte (ex.: requirements.txt) +
+        # alguns arquivos-fonte. Acima disso, satura em 1.0.
+        strength = min(1.0, top_score / 6.0)
+
+        # Combina dominância + força absoluta.
+        confidence = 0.5 * dominance + 0.5 * strength
+        return top_lang, round(min(1.0, confidence), 2)
 
     def _detect_entry_point(self, root: Path, language: str) -> Path | None:
         candidates = (
